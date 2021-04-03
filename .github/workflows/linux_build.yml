@@ -14,6 +14,7 @@ jobs:
   build:
     env:
       RUST_FAST_BUILD: "true"
+      RUST_SKIP_CARGO: "true"
     timeout-minutes: 80
     runs-on: ubuntu-latest
     # env:

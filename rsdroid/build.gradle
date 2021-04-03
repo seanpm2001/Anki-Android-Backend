@@ -30,17 +30,26 @@ android {
     }
 }
 
-// Consider upgrade to DSL: https://docs.gradle.org/current/userguide/plugins.html#sec:plugins_block
-apply plugin: "org.mozilla.rust-android-gradle.rust-android"
 
-cargo {
-    module = "../rslib-bridge"
-    libname = "rsdroid"
-    targets = "$System.env.RUST_FAST_BUILD" == "true" ? ["x86_64"] : ["x86", "arm", "x86_64", "arm64"]
-    profile = "$System.env.RUST_FAST_BUILD" == "true" ? 'debug' : 'release'
-    apiLevel = 21
-    verbose = true
+
+// Occasionally we want to perform fast testing which skips cargo (such as testing javadocs).
+if ("$System.env.RUST_SKIP_CARGO" != "true") {
+
+    // Consider upgrade to DSL: https://docs.gradle.org/current/userguide/plugins.html#sec:plugins_block
+    apply plugin: "org.mozilla.rust-android-gradle.rust-android"
+
+    cargo {
+        module = "../rslib-bridge"
+        libname = "rsdroid"
+        targets = "$System.env.RUST_FAST_BUILD" == "true" ? ["x86_64"] : ["x86", "arm", "x86_64", "arm64"]
+        profile = "$System.env.RUST_FAST_BUILD" == "true" ? 'debug' : 'release'
+        apiLevel = 21
+        verbose = true
+    }
+
+    preBuild.dependsOn "cargoBuild"
 }
+
 
 apply from: "proto.gradle"
 
@@ -59,8 +68,6 @@ dependencies {
     testImplementation project(path: ':rsdroid-testing')
 
 }
-
-preBuild.dependsOn "cargoBuild"
 
 signing {
     def hasPrivate = project.hasProperty('SIGNING_PRIVATE_KEY')

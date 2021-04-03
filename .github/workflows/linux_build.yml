@@ -12,6 +12,8 @@ on:
 
 jobs:
   build:
+    env:
+      RUST_FAST_BUILD: "true"
     timeout-minutes: 80
     runs-on: ubuntu-latest
     # env:
@@ -55,3 +57,6 @@ jobs:
 
     - name: Build
       run: ./gradlew clean assembleRelease -DtestBuildType=release -Dorg.gradle.daemon=false -Dorg.gradle.console=plain # assembleAndroidTest
+
+    - name: Test Javadoc
+      run: ./gradlew :rsdroid:androidJavadocs -DtestBuildType=release -Dorg.gradle.daemon=false -Dorg.gradle.console=plain
